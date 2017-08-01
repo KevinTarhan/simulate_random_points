@@ -1,0 +1,20 @@
+<plugin name="Point Simulation">
+	<directory>
+		random_point_simulation_plugin
+	</directory>
+	<version>
+		2017.07.18
+	</version>
+	<author>
+		Kevin Tarhan
+	</author>
+	<url>
+		https://github.com/flika-org//archive/master.zip
+	</url>
+	<dependencies>
+		<dependency name='numpy'></dependency>
+	</dependencies>
+	<menu_layout>
+		<action location="point_simulation" function="PointSim.gui">Simulate Points</action>
+	</menu_layout>
+</plugin>
