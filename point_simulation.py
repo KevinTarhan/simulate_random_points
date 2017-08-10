@@ -46,7 +46,7 @@ def compute_neighbor_distance(base_directory, file_directory):
     file_output, ok = QInputDialog.getText(save_box, "Neighbor Distance", """Output filename?""")
     if not ok:
         return
-    output_dir = r'{dir}/{file}'.format(dir=base_directory, file=file_output)
+    output_dir = r'{dir}/{file}.txt'.format(dir=base_directory, file=file_output)
     logger.debug(full_dir)
     distances(full_dir, full_dir, output_dir)
 
@@ -107,6 +107,5 @@ class PointSim(BaseProcess_noPriorWindow):
                 return
         except TypeError:
             return
-
 
 PointSim = PointSim()

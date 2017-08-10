@@ -2,7 +2,7 @@
 """
 Created on Sat Sep  5 12:17:03 2015
 
-@author: george
+@author: george (edited by Kevin)
 """
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 import numpy as np
@@ -10,7 +10,6 @@ import matplotlib
 from matplotlib import pyplot as plt
 import math
 import os
-
 
 def distances(filename1, filename2, output):
     x = np.loadtxt(filename1, usecols=(0,))
@@ -54,20 +53,26 @@ def distances(filename1, filename2, output):
     def allDists(dataSet, comparisonSet, searchRadius):
         dataDist = []
         for i in range(dataSet[0].size):
-            distance1 = (getDistances(dataSet[0][i], dataSet[1][i],
-                                      getNeighbours(dataSet[0][i], dataSet[1][i], comparisonSet, searchRadius),
-                                      searchRadius))
+            neighbor = getNeighbours(dataSet[0][i], dataSet[1][i], comparisonSet, searchRadius)
+            distance1 = (getDistances(dataSet[0][i], dataSet[1][i], neighbor,searchRadius))
             for s in range(len(distance1)):
                 dataDist.append(distance1[s])
             print(int((i / dataSet[0].size) * 100), "%")
-        return dataDist
+        return np.array(dataDist)
 
 
+    distanceSet= allDists(data, comparisonSet, searchRadius)
+    file_str = ''
+    file_ = open(output, 'w')
+    for element in distanceSet:
+        file_str += str(element) + '\n'
 
-    distanceSet = allDists(data, comparisonSet, searchRadius)
-    print(data)
-    np.savetxt(output, np.transpose(distanceSet), delimiter=',')
+    file_.write(file_str)
+    file_.close()
+
     print("Result File Saved")
+    hist = plt.hist(distanceSet, 50)
+    plt.show()
     return
 
 
