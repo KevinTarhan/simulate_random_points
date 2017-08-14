@@ -1,6 +1,6 @@
 <plugin name="Point Simulation">
 	<directory>
-		random_point_simulation_plugin
+		simulate_random_points
 	</directory>
 	<version>
 		2017.07.18
