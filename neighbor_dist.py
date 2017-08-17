@@ -11,7 +11,7 @@ from matplotlib import pyplot as plt
 import math
 import os
 
-def distances(filename1, filename2, output):
+def distances(filename1, filename2, output, pixel_scale):
     x = np.loadtxt(filename1, usecols=(0,))
     y = np.loadtxt(filename1, usecols=(1,))
     # print('File1 Loaded')
@@ -65,7 +65,7 @@ def distances(filename1, filename2, output):
     file_str = ''
     file_ = open(output, 'w')
     for element in distanceSet:
-        file_str += str(element) + '\n'
+        file_str += str(element * pixel_scale) + '\n'
 
     file_.write(file_str)
     file_.close()
