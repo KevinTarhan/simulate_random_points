@@ -11,7 +11,7 @@ from matplotlib import pyplot as plt
 import math
 import os
 
-def distances(filename1, filename2, output, pixel_scale):
+def distances(filename1, filename2, output, pixel_scale, display_graph):
     x = np.loadtxt(filename1, usecols=(0,))
     y = np.loadtxt(filename1, usecols=(1,))
     # print('File1 Loaded')
@@ -71,8 +71,9 @@ def distances(filename1, filename2, output, pixel_scale):
     file_.close()
 
     print("Result File Saved")
-    hist = plt.hist(distanceSet, 50)
-    plt.show()
+    if display_graph:
+        hist = plt.hist(distanceSet, 50)
+        plt.show()
     return
 
 

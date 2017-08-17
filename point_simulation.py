@@ -59,7 +59,7 @@ def get_text_file(filename=None):
     return filename
 
 
-def bounded_point_sim(width,height,numpoints,boundaries, pixel_scale):
+def bounded_point_sim(width,height,numpoints,boundaries, pixel_scale, display_graphs):
     random_x = []
     random_y = []
     export_txt = ''
@@ -71,37 +71,38 @@ def bounded_point_sim(width,height,numpoints,boundaries, pixel_scale):
         potential_y = np.random.uniform(0, height, 1)
         point_array = np.array([potential_x, potential_y]).reshape(1, 2)
         if comparison_path.contains_points(point_array):
-            export_txt += str(potential_x * pixel_scale) + ' ' + str(potential_y * pixel_scale) + '\n'
+            export_txt += str(potential_x[0] * pixel_scale) + ' ' + str(potential_y[0] * pixel_scale) + '\n'
             random_x.append(potential_x)
             random_y.append(potential_y)
             count += 1
     random_x = np.array(random_x)
     random_y = np.array(random_y)
-    ret = save_plot_points(random_x, random_y)
+    ret = save_plot_points(random_x, random_y, display_graphs)
     if ret == QMessageBox.Save:
         r = save_text_file(export_txt)
-        compute_neighbor_distance(r[0], r[1], pixel_scale)
+        compute_neighbor_distance(r[0], r[1], pixel_scale, display_graphs)
     else:
         return
 
 
-def unbounded_point_sim(width,height,numpoints,pixel_scale):
+def unbounded_point_sim(width,height,numpoints,pixel_scale,display_graphs):
     export_txt = ''
     random_x = np.random.uniform(0, width, numpoints)
     random_y = np.random.uniform(0, height, numpoints)
     for i, k in zip(random_x, random_y):
         export_txt += str(i * pixel_scale) + ' ' + str(k * pixel_scale) + '\n'
-    ret = save_plot_points(random_x, random_y)
+    ret = save_plot_points(random_x, random_y,display_graphs)
     if ret == QMessageBox.Save:
         r = save_text_file(export_txt)
-        compute_neighbor_distance(r[0], r[1], pixel_scale)
+        compute_neighbor_distance(r[0], r[1], pixel_scale, display_graphs)
     else:
         return
 
 
-def save_plot_points(x,y,area=5):
-    plt.scatter(x, y, s=area)
-    plt.show()
+def save_plot_points(x,y,display_graphs, area=5):
+    if display_graphs:
+        plt.scatter(x, y, s=area)
+        plt.show()
     save_box = QMessageBox()
     save_box.setWindowTitle('Save?')
     save_box.setText('Save (x,y) coordinates of scatter plot? This is necessary to compute nearest neighbors.')
@@ -111,7 +112,7 @@ def save_plot_points(x,y,area=5):
     return ret
 
 
-def compute_neighbor_distance(base_directory, file_directory, pixel_scale):
+def compute_neighbor_distance(base_directory, file_directory, pixel_scale, display_graphs):
     save_box = QWidget()
     full_dir = r'{file}'.format(file=file_directory)
     file_output, ok = QInputDialog.getText(save_box, "Neighbor Distance", """Output filename?""")
@@ -119,7 +120,7 @@ def compute_neighbor_distance(base_directory, file_directory, pixel_scale):
         return
     output_dir = r'{dir}/{file}.txt'.format(dir=base_directory, file=file_output)
     logger.debug(full_dir)
-    distances(full_dir, full_dir, output_dir, pixel_scale)
+    distances(full_dir, full_dir, output_dir, pixel_scale, display_graphs)
 
 
 class PointSim(BaseProcess_noPriorWindow):
@@ -148,24 +149,26 @@ class PointSim(BaseProcess_noPriorWindow):
         pixel_scale.setDecimals(3)
         pixel_scale.setSingleStep(.001)
         load_ROI = CheckBox()
+        display_graphs = CheckBox()
         self.items.append({'name': 'window_width', 'string': 'Window Width', 'object': window_width})
         self.items.append({'name': 'window_height', 'string': 'Window Height', 'object': window_height})
         self.items.append({'name': 'num_points', 'string': 'Number of Points', 'object': num_points})
         self.items.append({'name': 'pixel_scale', 'string': 'Microns per Pixel', 'object': pixel_scale})
         self.items.append({'name': 'load_ROI', 'string': 'Load ROI?', 'object': load_ROI})
+        self.items.append({'name': 'display_graphs', 'string': 'Display Graphs?', 'object': display_graphs})
         super().gui()
         self.ui.setGeometry(QRect(400, 50, 600, 130))
 
-    def __call__(self, window_width=200, window_height=200, num_points=10000, pixel_scale=.532, load_ROI = False):
+    def __call__(self, window_width=200, window_height=200, num_points=10000, pixel_scale=.532, load_ROI = False, display_graphs=True):
         try:
             if pixel_scale == 0:
                 pixel_scale = 1
             self.start()
             if load_ROI:
                 boundaries = get_text_file()
-                bounded_point_sim(window_width, window_height, num_points, boundaries, pixel_scale)
+                bounded_point_sim(window_width, window_height, num_points, boundaries, pixel_scale,display_graphs)
             else:
-                unbounded_point_sim(window_width, window_height, num_points, pixel_scale)
+                unbounded_point_sim(window_width, window_height, num_points, pixel_scale, display_graphs)
         except TypeError:
             return
 
